@@ -19,7 +19,8 @@ class ViewController: UIViewController {
     @IBAction func submitButton(_ sender: Any) {
         
         let stringToShow = cityname.text
-        let urlString = "https://api.openweathermap.org/data/2.5/weather?q=" + stringToShow! + "&appid=4e50d2279e5b4d7501d1092f83ea5345"
+        let newStringtoShow =  stringToShow?.replacingOccurrences(of: " ", with: "%20")
+        let urlString = "https://api.openweathermap.org/data/2.5/weather?q=" + newStringtoShow! + "&appid=4e50d2279e5b4d7501d1092f83ea5345"
         // https://api.openweathermap.org/data/2.5/weather?q=dallas&appid=4e50d2279e5b4d7501d1092f83ea5345
      
         let url = URL(string: urlString)
@@ -59,8 +60,9 @@ class ViewController: UIViewController {
             }
         }
         
-        task.resume()
         print(res)
+        task.resume()
+        
     }
     
     override func viewDidLoad() {
