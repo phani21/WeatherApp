@@ -8,13 +8,66 @@
 
 import UIKit
 
-class ViewController: UIViewController {
 
+var res = ""
+class ViewController: UIViewController {
+    
+    
+    @IBOutlet weak var outputField: UITextView!
+    @IBOutlet weak var cityname: UITextField!
+    
+    @IBAction func submitButton(_ sender: Any) {
+        
+        let stringToShow = cityname.text
+        let newStringtoShow =  stringToShow?.replacingOccurrences(of: " ", with: "%20")
+        let urlString = "https://api.openweathermap.org/data/2.5/weather?q=" + newStringtoShow! + "&appid=4e50d2279e5b4d7501d1092f83ea5345"
+        // https://api.openweathermap.org/data/2.5/weather?q=dallas&appid=4e50d2279e5b4d7501d1092f83ea5345
+     
+        let url = URL(string: urlString)
+        let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
+            if error == nil {
+                if let unWrappedData = data {
+                    do{
+                        let jsonResult = try JSONSerialization.jsonObject(with: unWrappedData, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary
+                        
+                        let weather = jsonResult!["weather"] as? NSArray
+                        let weatherItem = weather?[0] as? NSDictionary
+                        let description = weatherItem?["description"] as? String?
+                        if let res = description {
+                           // print(description)
+                           // print(res)
+                            DispatchQueue.main.async {
+                                if( res == nil){
+                                    self.outputField.text="Please enter a valid City name! "
+                                    self.outputField.backgroundColor = .white
+                                    self.outputField.textColor = .red
+                                }
+                                else{
+                                    self.outputField.text = res?.uppercased()
+                                    self.outputField.textColor = .black
+                                }
+                            }
+                        }
+                    }catch{
+                        print("Error fetching API DATA")
+                        
+                        
+                    }
+                    
+                    
+                }
+                
+            }
+        }
+        
+        print(res)
+        task.resume()
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        view.backgroundColor = UIColor(patternImage: UIImage(named: "weather.jpeg")!)
     }
-
-
+    
 }
-
